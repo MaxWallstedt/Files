@@ -1,0 +1,78 @@
+#!/bin/bash
+
+function printhelp {
+    echo "Usage:"
+    echo "    $ $0 [options] [-o output] input..."
+    echo ""
+    echo "Valid options are:"
+    echo "    -h / --help     Display this help message"
+    echo "    -c              Do not link the object files"
+    exit 0
+}
+
+if [ $# -lt 1 ]
+then
+    printhelp
+fi
+
+INPUT=()
+OBJECT=()
+OUTPUT=false
+LINK=true
+
+for i in $*
+do
+    if [ $OUTPUT = true ]
+    then
+        OUTPUT=$i
+    elif [ "$i" = "-h" -o "$i" = "--help" ]
+    then
+        printhelp
+    elif [ "$i" = "-o" ]
+    then
+        OUTPUT=true
+    elif [ "$i" = "-c" ]
+    then
+        LINK=false
+    else
+        INPUT+=("$i")
+        OBJECT+=("${i%.*}.o")
+    fi
+done
+
+if [ -z "$INPUT" ]
+then
+    echo "ERROR: No input specified!"
+    exit -1
+fi
+
+if [ $OUTPUT = true ]
+then
+    echo "ERROR: No output specified!"
+    exit -1
+elif [ $OUTPUT = false ]
+then
+    OUTPUT="${INPUT%.*}"
+
+    if [ -f "$OUTPUT" ]
+    then
+        OUTPUT="a.out"
+    fi
+fi
+
+for i in ${INPUT[*]}
+do
+    if [ ! -f $i ]
+    then
+        echo "ERROR: file \"$i\" does not exist!"
+        exit -1
+    fi
+done
+
+gcc -c "${INPUT[*]}" `pkg-config --cflags --libs gtk+-3.0`
+
+if [ $LINK = true ]
+then
+    gcc -o "$OUTPUT" "${OBJECT[*]}" `pkg-config --cflags --libs gtk+-3.0`
+    rm -f "${OBJECT[*]}"
+fi
