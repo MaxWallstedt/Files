@@ -228,6 +228,24 @@ then
 	echo -e "Done!\n"
 fi
 
+if [ ! -f "README" -a ! -f "README.md" ]
+then
+	echo "Creating file README.md ..."
+
+	echo "$PROJECT_NAME" >> README.md
+	LEN=${#PROJECT_NAME}
+	FMTSTR=""
+
+	while [ $LEN -gt 0 ]
+	do
+		FMTSTR+="="
+		LEN=`expr $LEN - 1`
+	done
+	echo "$FMTSTR" >> README.md
+
+	echo -e "Done!\n"
+fi
+
 echo "C project successfully initialised!"
 
 popd > /dev/null
