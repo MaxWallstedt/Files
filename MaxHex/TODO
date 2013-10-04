@@ -1,0 +1,7 @@
+README.md
+
+check_args.c - check if file exists - goto?
+
+exec_command.c - do
+check_file_changes.c - do
+the rest of *.c *.asm
